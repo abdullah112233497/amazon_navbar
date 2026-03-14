@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+@layer components {
+  .nav-link {
+    @apply border border-transparent hover:border-white p-1 cursor-pointer transition-all;
+  }
+}
