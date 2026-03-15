@@ -1,119 +1,191 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Search, ShoppingCart, MapPin, Menu, ChevronDown } from "lucide-react";
-
+import { Search, ShoppingCart, MapPin, Menu, ChevronDown, X } from "lucide-react";
 
 export default function AmazonNavbar() {
   const [isLangOpen, setIsLangOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Lock scrolling when the mobile menu is active
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    // Cleanup on unmount
+    return () => { document.body.style.overflow = "unset"; };
+  }, [isMobileMenuOpen]);
+
+  const isDimmed = isLangOpen || isAccountOpen || isMobileMenuOpen;
+
+  const navLinks = [
+    "Today's Deals", 
+    "Gift Cards", 
+    "Registry", 
+    "Sell", 
+    "Prime Video", 
+    "Customer Service"
+  ];
 
   return (
-    <header className="font-sans sticky top-0 z-50">
-      {/* Top Navbar */}
-      <div className="bg-[#131921] text-white py-1 px-4 flex items-center gap-2 h-[60px]">
-        
-        {/* Logo */}
- 
-<div className="flex items-center border border-transparent hover:border-white px-2 py-1 cursor-pointer h-[50px] transition-all ml-1">
-  <Image 
-    src="/amazon_navbar4.png" // The name of the file in your public folder
-    alt="Amazon Logo"
-    width={95}      // Adjusted width to match navbar height
-    height={30}     // Maintains aspect ratio
-    priority        // Ensures the logo loads immediately (LCP)
-    className="object-contain mt-2" 
-  />
-</div>
+    <>
+      {/* Dimmer Overlay */}
+      <div 
+        onClick={() => setIsMobileMenuOpen(false)}
+        className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${isDimmed ? "opacity-100" : "opacity-0 pointer-events-none"}`} 
+      />
 
-        {/* Deliver To */}
-        <div className="hidden lg:flex items-center border border-transparent hover:border-white p-2 cursor-pointer">
-          <MapPin size={18} className="mt-3" />
-          <div className="text-[12px] ml-1 leading-tight">
-            <p className="text-[#ccc]">Deliver to </p>
-            <p className="font-bold">Pakistan</p>
+      {/* Mobile Sliding Menu (From Right) */}
+      <div 
+        className={`fixed top-0 right-0 h-[100dvh] w-[80vw] max-w-[320px] bg-white z-50 transform transition-transform duration-300 ease-in-out shadow-2xl flex flex-col ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="bg-[#232f3e] text-white p-4 flex justify-between items-center h-[60px] flex-shrink-0">
+          <div className="flex items-center gap-2 font-bold text-[16px]">
+            <div className="w-7 h-7 bg-white text-[#232f3e] rounded-full flex items-center justify-center text-sm">👤</div>
+            Hello, sign in
           </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="flex flex-grow h-10 rounded-md overflow-hidden bg-white focus-within:ring-2 focus-within:ring-[#f3a847]">
-          <div className="bg-[#f3f3f3] text-black text-[12px] px-3 flex items-center border-r hover:bg-[#dadada] cursor-pointer text-gray-600">
-            All <ChevronDown size={14} className="ml-1" />
-          </div>
-          <input 
-            type="text" 
-            className="flex-grow px-3 text-black outline-none text-base" 
-            placeholder="Buscar Amazon"
-          />
-          <button className="bg-[#febd69] hover:bg-[#f3a847] p-2 px-3 text-[#131921]">
-            <Search size={24} strokeWidth={3} />
+          <button onClick={() => setIsMobileMenuOpen(false)} className="hover:text-[#f3a847]">
+            <X size={28} />
           </button>
         </div>
 
-        {/* Right Links */}
-        <div className="flex items-center">
+        <div className="flex-1 overflow-y-auto text-black pb-10">
+          <div className="p-4 border-b border-gray-200">
+            <h3 className="font-bold text-[18px] mb-4">Browse</h3>
+            <ul className="space-y-5">
+              <li className="font-bold text-[#131921]">Amazon Home</li>
+              {navLinks.map((item) => (
+                <li key={item} className="text-gray-700 text-[15px] cursor-pointer">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header Container - Strict 100% width */}
+      <header className="font-sans sticky top-0 z-40 select-none shadow-md w-full max-w-[100vw] overflow-x-hidden md:overflow-visible bg-[#131921]">
+        
+        {/* TOP ROW: Logo and Icons */}
+        <div className="text-white py-1 px-2 flex items-center justify-between h-[60px] w-full gap-1">
           
-          {/* Language Selector Toggle */}
-          <div 
-            className="relative border border-transparent hover:border-white p-2 cursor-pointer h-[50px] flex items-end gap-1"
-            onMouseEnter={() => setIsLangOpen(true)}
-            onMouseLeave={() => setIsLangOpen(false)}
-          >
-            <span className="text-sm font-bold">EN</span>
-            <ChevronDown size={12} className="text-gray-400 mb-1" />
+          {/* LEFT SIDE: Logo & Deliver */}
+          <div className="flex items-center flex-shrink-0 min-w-0">
+            <div className="flex items-center border border-transparent hover:border-white px-1 sm:px-2 h-[50px] cursor-pointer">
+              <Image 
+                src="https://pngimg.com/uploads/amazon/amazon_PNG11.png" 
+                alt="Amazon"
+                width={85} 
+                height={28} 
+                className="object-contain mt-2" 
+                priority
+              />
+            </div>
 
-            {/* Language Dropdown Menu */}
-            {isLangOpen && (
-              <div className="absolute top-[50px] left-0 w-64 bg-white text-black shadow-xl border rounded-sm p-4 z-[100] cursor-default">
-                <div className="absolute -top-2 left-4 w-4 h-4 bg-white rotate-45 border-t border-l"></div>
-                <p className="text-sm font-semibold mb-3">Cambiar idioma</p>
-                <div className="space-y-2 text-sm">
-                  {['English - EN', 'español - ES', 'AR - العربية', 'Deutsch - DE'].map((lang, idx) => (
-                    <label key={lang} className="flex items-center gap-2 hover:underline cursor-pointer">
-                      <input type="radio" name="lang" defaultChecked={idx === 1} className="accent-[#e47911]" />
-                      {lang}
-                    </label>
-                  ))}
-                </div>
-                <hr className="my-3" />
-                <p className="text-xs text-blue-700 hover:underline cursor-pointer">Cambiar país/región</p>
+            <div className="hidden lg:flex items-center border border-transparent hover:border-white px-2 h-[50px] cursor-pointer ml-1">
+              <MapPin size={18} className="mt-3" />
+              <div className="ml-1 flex flex-col justify-center">
+                <p className="text-[#ccc] text-[12px] leading-[14px]">Deliver to</p>
+                <p className="font-bold text-[14px] leading-[15px]">Pakistan</p>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Account */}
-          <div className="border border-transparent hover:border-white p-2 cursor-pointer leading-tight">
-            <p className="text-[12px]">Hello, sign in</p>
-            <p className="text-sm font-bold flex items-center">Account & Lists <ChevronDown size={12} className="ml-1 text-gray-400" /></p>
+          {/* MIDDLE: Search Bar (Desktop Only) */}
+          <div className="hidden md:flex flex-grow h-10 rounded-md overflow-hidden bg-white focus-within:ring-[3px] focus-within:ring-[#f3a847] mx-2 transition-shadow min-w-0">
+            <div className="bg-[#f3f3f3] text-[#555] text-[12px] px-3 flex items-center border-r border-gray-300 hover:bg-[#dadada] hover:text-black cursor-pointer flex-shrink-0">
+              All <ChevronDown size={14} className="ml-1 mt-0.5" />
+            </div>
+            <input 
+              type="text" 
+              className="flex-grow px-3 text-black outline-none text-[15px] placeholder:text-gray-600 min-w-0" 
+              placeholder="Search Amazon"
+            />
+            <button className="bg-[#febd69] hover:bg-[#f3a847] p-2 px-3 text-[#131921] flex-shrink-0">
+              <Search size={24} strokeWidth={2.5} />
+            </button>
           </div>
 
-          {/* Orders */}
-          <div className="hidden md:block border border-transparent hover:border-white p-2 cursor-pointer leading-tight">
-            <p className="text-[12px]">Returns</p>
-            <p className="text-sm font-bold">& Orders</p>
-          </div>
+          {/* RIGHT SIDE: Icons & Menus */}
+          <div className="flex items-center flex-shrink-0 gap-1 sm:gap-0">
+            
+            {/* Lang (Desktop) */}
+            <div className="hidden md:flex items-center border border-transparent hover:border-white px-2 h-[50px] cursor-pointer" onMouseEnter={() => setIsLangOpen(true)} onMouseLeave={() => setIsLangOpen(false)}>
+              <span className="text-[14px] font-bold mt-2">🇺🇸 EN</span>
+              <ChevronDown size={10} className="text-gray-400 mt-3 ml-1" />
+            </div>
 
-          {/* Cart */}
-          <div className="flex items-end border border-transparent hover:border-white p-2 cursor-pointer relative h-[50px]">
-             <div className="relative">
-                <span className="absolute -top-1 left-4 text-[#f08804] text-base font-bold">0</span>
-                <ShoppingCart size={34} />
-             </div>
-             <p className="text-sm font-bold pb-1">Cart</p>
+            {/* Account (Desktop) */}
+            <div className="hidden md:flex flex-col justify-center border border-transparent hover:border-white px-2 h-[50px] cursor-pointer">
+              <p className="text-[12px] leading-[12px]">Hello, sign in</p>
+              <p className="text-[14px] font-bold flex items-center leading-[15px]">Account & Lists <ChevronDown size={10} className="ml-1 text-gray-400" /></p>
+            </div>
+
+            {/* Orders (Desktop) */}
+            <div className="hidden md:flex flex-col justify-center border border-transparent hover:border-white px-2 h-[50px] cursor-pointer">
+              <p className="text-[12px] leading-[12px]">Returns</p>
+              <p className="font-bold text-[14px] leading-[15px]">& Orders</p>
+            </div>
+
+            {/* User Icon (Mobile Only) */}
+            <div className="md:hidden flex flex-col justify-center border border-transparent hover:border-white px-1 sm:px-2 h-[50px] cursor-pointer">
+              <p className="text-[13px] leading-[14px]">Sign in ›</p>
+              <div className="flex items-center">
+                 {/* <div className="w-5 h-5 bg-white text-[#131921] rounded-full flex items-center justify-center text-[10px] font-bold mt-1">👤</div> */}
+              </div>
+            </div>
+
+            {/* Cart (Both) */}
+            <div className="flex items-end border border-transparent hover:border-white px-1 sm:px-2 h-[50px] cursor-pointer relative pb-1">
+               <div className="relative">
+                  <span className="absolute left-[13px] -top-1.5 text-[#f08804] text-[16px] font-bold w-4 text-center">0</span>
+                  <ShoppingCart size={36} strokeWidth={1.5} className="text-white" />
+               </div>
+               <p className="hidden md:block text-[14px] font-bold ml-0.5">Cart</p>
+            </div>
+
+            {/* Hamburger (Mobile Only) */}
+            <div 
+              className="md:hidden flex items-center border border-transparent hover:border-white px-1 h-[50px] cursor-pointer"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu size={28} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Nav */}
-      <div className="bg-[#232f3e] text-white flex items-center px-4 py-1 text-[14px] gap-1 h-[39px]">
-        <div className="flex items-center font-bold border border-transparent hover:border-white px-2 py-1 cursor-pointer">
-          <Menu className="mr-1" size={20} /> All
+        {/* BOTTOM ROW (Mobile Search) */}
+        <div className="md:hidden w-full px-2 pb-2">
+           <div className="flex w-full h-11 rounded-md overflow-hidden bg-white focus-within:ring-[3px] focus-within:ring-[#f3a847] shadow-sm">
+            <input 
+              type="text" 
+              className="flex-grow px-3 text-black outline-none text-[16px] min-w-0" 
+              placeholder="Search Amazon" 
+            />
+            <button className="bg-[#febd69] p-2 px-4 text-[#131921] flex-shrink-0">
+              <Search size={24} strokeWidth={2.5} />
+            </button>
+          </div>
         </div>
-        {["Today's Deals", "Gift Cards", "Registry", "Sell", "Prime Video", "Customer Service"].map((item) => (
-          <p key={item} className="px-2 py-1 border border-transparent hover:border-white cursor-pointer whitespace-nowrap">
-            {item}
-          </p>
-        ))}
-      </div>
-    </header>
+
+        {/* DESKTOP BOTTOM NAV */}
+        <div className="hidden md:flex bg-[#232f3e] text-white items-center px-2 text-[14px] h-[39px] w-full">
+          <div className="flex items-center font-bold border border-transparent hover:border-white px-2 h-[34px] cursor-pointer mr-1">
+            <Menu className="mr-1" size={24} /> All
+          </div>
+          <div className="flex items-center space-x-1">
+            {navLinks.map((item) => (
+              <p key={item} className="px-2 h-[34px] flex items-center border border-transparent hover:border-white cursor-pointer whitespace-nowrap">
+                {item}
+              </p>
+            ))}
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
