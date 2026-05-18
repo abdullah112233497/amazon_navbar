@@ -2,7 +2,7 @@ Amazon Nav bar:
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
-
+In which I practicing my frontend in which I built the Amazon navbar.
 First, run the development server:
 
 ```bash
