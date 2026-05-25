@@ -5,7 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 In which I practicing my frontend in which I built the Amazon navbar.
 and also use the differect library and alsi i have built it as a component.
 First, run the development server:
-
+→
 ```bash
 npm run dev
 # or
